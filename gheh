@@ -124,16 +124,16 @@ def open_capcut():
         return False
 def create_new_project(video_path):
     """Create a new project with the video"""
+    new_project_pos = pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.8)
+    if new_project_pos:
+        pyautogui.click(new_project_pos)
+        time.sleep(2)
+    else:
+        print("Could not find New Project button")
+        a = input("Press Enter to continue...")
+        return False
     try:
         # Click "New Project" button
-        new_project_pos = pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.8)
-        if new_project_pos:
-            pyautogui.click(new_project_pos)
-            time.sleep(2)
-        else:
-            print("Could not find New Project button")
-            a = input("Press Enter to continue...")
-            return False
         gw.getWindowsWithTitle("CapCut")[0].maximize()
         time.sleep(2)
             
