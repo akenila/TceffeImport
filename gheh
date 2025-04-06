@@ -1,0 +1,377 @@
+def extract(path):
+    with open(path, 'r', encoding="utf-8") as file:
+        return json.load(file)
+
+
+def write(data, filename):
+    with open(filename, 'w', encoding="utf-8") as file:
+        file.write(data)
+
+
+def ms_to_srt(time_in_ms):
+    convert_ms = int(time_in_ms / 1000)
+    ms = convert_ms % 1000
+    total_seconds = (convert_ms - ms) / 1000
+    seconds = int(total_seconds % 60)
+    total_minutes = (total_seconds - seconds) / 60
+    minutes = int(total_minutes % 60)
+    hour = int((total_minutes - minutes) / 60)
+
+    return f'{hour:02}:{minutes:02}:{seconds:02},{ms:03}'
+
+
+def scrap_subs(content):
+    subtitles_info = []
+    materials = content['materials']
+    try:
+        sub_timing = content['tracks'][1]['segments']
+        return True
+    except: return False
+
+
+def get_srt_file(video_name=None):
+    """Get SRT file from the most recently created CapCut project folder"""
+    time.sleep(3)
+    if not os.path.exists("Capcut_SRT"):
+        os.mkdir("Capcut_SRT")
+    
+    capcut_path = os.getenv("LOCALAPPDATA") + r"\CapCut"
+    projects_path = capcut_path + r"\User Data\Projects\com.lveditor.draft"
+    
+    # Get all project folders except special folders
+    project_folders = [p for p in os.listdir(projects_path) 
+                      if p not in ['.recycle_bin', 'root_meta_info.json']]
+    
+    if not project_folders:
+        print("No project folders found")
+        return False
+    
+    # Get the most recently created project folder
+    project_with_times = []
+    for folder in project_folders:
+        folder_path = os.path.join(projects_path, folder)
+        # Get creation time
+        creation_time = os.path.getctime(folder_path)
+        project_with_times.append((folder, creation_time))
+    
+    # Sort by creation time (newest first)
+    project_with_times.sort(key=lambda x: x[1], reverse=True)
+    
+    # Get the most recent project
+    project = project_with_times[0][0]
+    print(f"Using most recent project folder: {project}")
+    
+    draft = fr"{projects_path}\{project}\draft_content.json"
+    if os.path.exists(draft):
+        if scrap_subs(extract(draft)) == False:
+            return False
+        else:
+            return True
+    else:
+        print(f"draft_content.json not found in {project}")
+        return False
+
+def select_folder():
+    """Open dialog to select folder with videos"""
+    root = Tk()
+    root.withdraw()  # Hide the main window
+    folder_path = filedialog.askdirectory(title="Select folder with videos")
+    root.destroy()
+    return folder_path
+
+def get_video_files(folder_path):
+    """Get list of video files from the folder"""
+    video_extensions = ['.mp4', '.avi', '.mov', '.mkv', '.wmv']
+    video_files = []
+    
+    for file in os.listdir(folder_path):
+        if any(file.lower().endswith(ext) for ext in video_extensions):
+            video_files.append(os.path.join(folder_path, file))
+    
+    return video_files
+
+def open_capcut():
+    """Open Capcut application or restore if minimized"""
+    try:
+        # Check if Capcut is already running
+        capcut_windows = gw.getWindowsWithTitle("CapCut")
+        
+        if capcut_windows:
+            # Capcut is already running
+            capcut_window = capcut_windows[0]
+            
+            # Check if window is minimized
+            if capcut_window.isMinimized:
+                print("Restoring minimized Capcut window...")
+                capcut_window.restore()
+            
+            # Activate and focus on the window
+            capcut_window.activate()
+            time.sleep(2)  # Wait for window to become active
+            print("Capcut window activated")
+            
+        else:
+            # Capcut is not running, launch it
+            capcut_path = os.getenv("LOCALAPPDATA") + r"\CapCut\Apps\CapCut.exe"    
+            subprocess.Popen(capcut_path)
+            print("Opening Capcut...")
+            time.sleep(5)  # Wait for Capcut to open
+        
+        return True
+        
+    except Exception as e:
+        print(f"Error with Capcut: {e}")
+        return False
+def create_new_project(video_path):
+    """Create a new project with the video"""
+    try:
+        # Click "New Project" button
+        new_project_pos = pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.8)
+        if new_project_pos:
+            pyautogui.click(new_project_pos)
+            time.sleep(2)
+        else:
+            print("Could not find New Project button")
+            return False
+        gw.getWindowsWithTitle("CapCut")[0].maximize()
+        time.sleep(2)
+            
+        # Import video
+        import_video_pos = pyautogui.locateCenterOnScreen('./assets/import_media.png', confidence=0.8)
+        if import_video_pos:
+            pyautogui.click(import_video_pos)
+            time.sleep(1)
+            
+            # Type the path to the video file
+            video_path = video_path.replace('/', '\\')  # Replace forward slashes with backslashes
+            pyperclip.copy(video_path)  # Copy path to clipboard
+            pyautogui.hotkey('ctrl', 'v')
+            time.sleep(2)
+            pyautogui.press('enter')
+            
+            time.sleep(3)
+            
+            # Get screen dimensions
+            screen_width, screen_height = pyautogui.size()
+            
+            video_in_panel_pos = (screen_width * 0.15, screen_height * 0.23)
+            
+            # Define the drop target (timeline/lower half of app)
+            drop_target = (screen_width * 0.5, screen_height * 0.75)
+            
+            # Perform the drag and drop
+            pyautogui.moveTo(video_in_panel_pos)
+            pyautogui.mouseDown()
+            time.sleep(0.5)  # Brief pause before dragging
+            pyautogui.moveTo(drop_target, duration=1.0)  # Slow drag movement
+            pyautogui.mouseUp()
+            time.sleep(5)  # Wait for the drop to be processed
+            
+            # Click on remove_bg button
+            print("Looking for remove_bg button...")
+            remove_bg_pos = pyautogui.locateCenterOnScreen('./assets/remove_bg.png', confidence=0.8)
+            if remove_bg_pos:
+                pyautogui.click(remove_bg_pos)
+                print("Clicked on remove_bg button")
+                time.sleep(2)
+                
+                # Find removal button, move 20px left, then click
+                print("Looking for removal button...")
+                removal_pos = pyautogui.locateCenterOnScreen('./assets/removal.png', confidence=0.8)
+                if removal_pos:
+                    # Move 20px left from the found position
+                    click_pos = (removal_pos[0] - 90, removal_pos[1])
+                    pyautogui.click(click_pos)
+                    time.sleep(1)
+                    time.sleep(2)
+                else:
+                    print("Could not find removal button")
+                while True:
+                    try:
+                        if pyautogui.locateCenterOnScreen('./assets/removal_success.png', confidence=0.95):
+                            break
+                        time.sleep(1)
+                    except Exception as e:
+                        continue
+            else:
+                print("Could not find remove_bg button")
+            
+            # Click on text button
+            print("Looking for text button...")
+            text_button_pos = pyautogui.locateCenterOnScreen('./assets/text.png', confidence=0.8)
+            if text_button_pos:
+                pyautogui.click(text_button_pos)
+                print("Clicked on text button")
+                time.sleep(2)
+                
+                # Click on auto caption button
+                print("Looking for auto caption button...")
+                auto_caption_pos = pyautogui.locateCenterOnScreen('./assets/auto_caption.png', confidence=0.8)
+                if auto_caption_pos:
+                    pyautogui.click(auto_caption_pos)
+                    print("Clicked on auto caption button")
+                    time.sleep(2)
+                    
+                    # Click generate button
+                    print("Looking for generate button...")
+                    generate_pos = pyautogui.locateCenterOnScreen('./assets/generate.png', confidence=0.8)
+                    if generate_pos:
+                        pyautogui.click(generate_pos)
+                        print("Clicked on generate button")
+                        
+                        # Wait for SRT file to be available
+                        print("Waiting for subtitles to generate...")
+                        attempts = 0
+                        max_attempts = 60  # 5 minutes maximum (60 * 5s)
+                        while attempts < max_attempts:
+                            if get_srt_file():
+                                print("Subtitles generated successfully!")
+                                break
+                            print(f"Waiting for subtitles... Attempt {attempts+1}/{max_attempts}")
+                            time.sleep(3)
+                            attempts += 1
+                        
+                        if attempts >= max_attempts:
+                            print("Subtitle generation timed out")
+                            return False
+                        
+                        # Click on template button
+                        print("Looking for template button...")
+                        while True:
+                            try:
+                                template_pos = pyautogui.locateCenterOnScreen('./assets/template.png', confidence=0.8)
+                                if template_pos:
+                                    pyautogui.click(template_pos)
+                                    print("Clicked on template button")
+                                    time.sleep(2)
+                                    
+                                    # Click on effect button
+                                    print("Looking for effect button...")
+                                    effect_pos = pyautogui.locateCenterOnScreen('./assets/effect.png', confidence=0.8)
+                                    if effect_pos:
+                                        pyautogui.click(effect_pos)
+                                        print("Clicked on effect button")
+                                        time.sleep(2)
+                                    else:
+                                        print("Could not find effect button")
+                                    break
+                                else:
+                                    print("Could not find template button")
+                            except Exception as e:
+                                time.sleep(2)
+                                continue
+                    else:
+                        print("Could not find generate button")
+                else:
+                    print("Could not find auto caption button")
+            else:
+                print("Could not find text button")
+                
+        else:
+            print("Could not find Import Media button")
+            return False
+            
+        return True
+    except Exception as e:
+        print(f"Error creating new project: {e}")
+        return False
+def close_project():
+    """Close the current project"""
+    print("Closing project...")
+    time.sleep(3)
+    
+    # width, height = pyautogui.size()
+    # pyautogui.click(width*0.06, height*0.02)
+    try:
+        menu = pyautogui.locateCenterOnScreen('./assets/menu.png', confidence=0.7)
+        if menu:
+            pyautogui.click(menu)
+            time.sleep(1)
+    except Exception as e:
+        print(f"Failed to locate menu: {e}")
+        return close_project()
+    time.sleep(1)
+    try:
+        close = pyautogui.locateCenterOnScreen('./assets/back_to_home.png', confidence=0.7)
+        if close:
+                pyautogui.click(close)
+                time.sleep(1)
+                return True
+        else:
+            return close_project()
+    except Exception as e:
+        print(f"Failed to close project: {e}")
+        return close_project()
+
+
+def main():
+    # Select folder with videos
+    start = input("Press Enter to start...")
+    while True:
+        try:
+            video_folder = select_folder()
+            if not video_folder:
+                print("No folder selected. Exiting...")
+                choice = input("Do you want to continue? (y/n): ")
+                if choice.lower() != 'y':   
+                    break
+                continue
+                
+            # Get list of video files
+            video_files = get_video_files(video_folder)
+            if not video_files:
+                print("No video files found in the selected folder. Exiting...")
+                choice = input("Do you want to continue? (y/n): ")
+                if choice.lower() != 'y':
+                    break
+                continue
+            
+            print(f"Found {len(video_files)} video files to process.")
+            
+            # Open Capcut
+            if not open_capcut():
+                print("Failed to open Capcut. Exiting")
+                choice = input("Do you want to continue? (y/n): ")
+                if choice.lower() != 'y':
+                    break   
+                continue
+            
+
+            for i, video_path in enumerate(video_files):
+                video_name = os.path.basename(video_path)
+                print(f"\nProcessing video {i+1}/{len(video_files)}: {video_name}")
+                while True:
+                    try:
+                        if pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.8):
+                            break
+                        time.sleep(1)
+                    except Exception as e:
+                        continue
+                
+                # Create new project with the video
+                if not create_new_project(video_path):
+                    print(f"Failed to create project for {video_name}. Skipping...")
+                    continue
+                if not close_project():
+                    print(f"Failed to close project for {video_name}. Skipping...")
+                    continue
+                    
+                # Generate auto subtitles
+            print("\nAll videos processed. Task completed.")
+            choice = input("Do you want to continue? (y/n): ")
+            if choice.lower() != 'y':
+                break
+        except Exception as e:
+            tb = e.__traceback__
+            error_message = f"Exception: {e} | "
+            while tb is not None:
+                filename = tb.tb_frame.f_code.co_filename
+                lineno = tb.tb_lineno
+                function_name = tb.tb_frame.f_code.co_name
+                error_message += f"File: {filename}, Line: {lineno}, in {function_name}\n"
+                tb = tb.tb_next 
+            open("error_log.txt", "a").write(error_message)
+            continue
+
+if __name__ == "__main__":
+    main()
