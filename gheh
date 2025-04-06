@@ -157,7 +157,7 @@ def create_new_project(video_path):
             
             try:
                 text = pyautogui.locateOnScreen('./assets/sticker.png', confidence=0.8)
-                video_in_panel_pos = (text[0], text[1]+180)
+                video_in_panel_pos = (text[0], text[1]+200)
             except Exception as e:
                 print(f"Error locating text: {e}")
                 return False
@@ -186,7 +186,7 @@ def create_new_project(video_path):
                 removal_pos = pyautogui.locateCenterOnScreen('./assets/removal.png', confidence=0.8)
                 if removal_pos:
                     # Move 20px left from the found position
-                    click_pos = (removal_pos[0] - 120, removal_pos[1])
+                    click_pos = (removal_pos[0] - 80, removal_pos[1])
                     pyautogui.click(click_pos)
                     time.sleep(1)
                     time.sleep(2)
