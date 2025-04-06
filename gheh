@@ -132,6 +132,7 @@ def create_new_project(video_path):
             time.sleep(2)
         else:
             print("Could not find New Project button")
+            a = input("Press Enter to continue...")
             return False
         gw.getWindowsWithTitle("CapCut")[0].maximize()
         time.sleep(2)
@@ -274,6 +275,7 @@ def create_new_project(video_path):
         return True
     except Exception as e:
         print(f"Error creating new project: {e}")
+        a = input("Press Enter to continue...")
         return False
 def close_project():
     """Close the current project"""
@@ -340,13 +342,6 @@ def main():
             for i, video_path in enumerate(video_files):
                 video_name = os.path.basename(video_path)
                 print(f"\nProcessing video {i+1}/{len(video_files)}: {video_name}")
-                while True:
-                    try:
-                        if pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.8):
-                            break
-                        time.sleep(1)
-                    except Exception as e:
-                        continue
                 
                 # Create new project with the video
                 if not create_new_project(video_path):
