@@ -156,8 +156,8 @@ def create_new_project(video_path):
             screen_width, screen_height = pyautogui.size()
             
             try:
-                text = pyautogui.locateOnScreen('./assets/sub.png', confidence=0.8)
-                video_in_panel_pos = (text[0]+200, text[1])
+                text = pyautogui.locateOnScreen('./assets/sticker.png', confidence=0.8)
+                video_in_panel_pos = (text[0], text[1]+200)
             except Exception as e:
                 print(f"Error locating text: {e}")
                 return False
