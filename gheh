@@ -126,16 +126,18 @@ def create_new_project(video_path):
     """Create a new project with the video"""
     try:
         # Click "New Project" button
-        new_project_pos = pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.7)
-        if new_project_pos:
-            pyautogui.click(new_project_pos[0], new_project_pos[1])
-            time.sleep(2)
-        else:
-            print("Could not find New Project button")
-            return False
+        # new_project_pos = pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.7)
+        # if new_project_pos:
+        #     pyautogui.click(new_project_pos[0], new_project_pos[1])
+        #     time.sleep(2)
+        # else:
+        #     print("Could not find New Project button")
+        #     return False
         gw.getWindowsWithTitle("CapCut")[0].maximize()
+        width, height = pyautogui.size()
+        pyautogui.click(width//2, height//8)  # Click on the screen to focus Capcut
         time.sleep(2)
-            
+        print("Looking for new project button...")
         # Import video
         import_video_pos = pyautogui.locateCenterOnScreen('./assets/import_media.png', confidence=0.7)
         if import_video_pos:
@@ -340,14 +342,7 @@ def main():
             for i, video_path in enumerate(video_files):
                 video_name = os.path.basename(video_path)
                 print(f"\nProcessing video {i+1}/{len(video_files)}: {video_name}")
-                while True:
-                    try:
-                        if pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.7):
-                            break
-                        time.sleep(1)
-                    except Exception as e:
-                        print(f"Error locating create project button: {e}")
-                        continue
+                time.sleep(2)
                 
                 # Create new project with the video
                 if not create_new_project(video_path):
