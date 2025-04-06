@@ -186,7 +186,7 @@ def create_new_project(video_path):
                 removal_pos = pyautogui.locateCenterOnScreen('./assets/removal.png', confidence=0.8)
                 if removal_pos:
                     # Move 20px left from the found position
-                    click_pos = (removal_pos[0] - 90, removal_pos[1])
+                    click_pos = (removal_pos[0] - 120, removal_pos[1])
                     pyautogui.click(click_pos)
                     time.sleep(1)
                     time.sleep(2)
