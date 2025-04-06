@@ -155,7 +155,12 @@ def create_new_project(video_path):
             # Get screen dimensions
             screen_width, screen_height = pyautogui.size()
             
-            video_in_panel_pos = (screen_width * 0.1, screen_height * 0.19)
+            try:
+                text = pyautogui.locateOnScreen('./assets/sub.png', confidence=0.8)
+                video_in_panel_pos = (text[0]+200, text[1])
+            except Exception as e:
+                print(f"Error locating text: {e}")
+                return False
             
             # Define the drop target (timeline/lower half of app)
             drop_target = (screen_width * 0.5, screen_height * 0.75)
