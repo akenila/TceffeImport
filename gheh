@@ -128,7 +128,7 @@ def create_new_project(video_path):
         # Click "New Project" button
         new_project_pos = pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.8)
         if new_project_pos:
-            pyautogui.click(new_project_pos[0], new_project_pos[1] - 100)
+            pyautogui.click(new_project_pos[0], new_project_pos[1])
             time.sleep(2)
         else:
             print("Could not find New Project button")
