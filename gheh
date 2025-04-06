@@ -192,13 +192,15 @@ def create_new_project(video_path):
                     time.sleep(2)
                 else:
                     print("Could not find removal button")
-                while True:
+                d=10
+                while d>0:
                     try:
                         if pyautogui.locateCenterOnScreen('./assets/removal_success.png', confidence=0.95):
                             break
                         time.sleep(1)
                     except Exception as e:
                         continue
+                    d-=1
             else:
                 print("Could not find remove_bg button")
             
