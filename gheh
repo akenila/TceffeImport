@@ -124,16 +124,15 @@ def open_capcut():
         return False
 def create_new_project(video_path):
     """Create a new project with the video"""
-    new_project_pos = pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.8)
-    if new_project_pos:
-        pyautogui.click(new_project_pos)
-        time.sleep(2)
-    else:
-        print("Could not find New Project button")
-        a = input("Press Enter to continue...")
-        return False
     try:
         # Click "New Project" button
+        new_project_pos = pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.8)
+        if new_project_pos:
+            pyautogui.click(new_project_pos)
+            time.sleep(2)
+        else:
+            print("Could not find New Project button")
+            return False
         gw.getWindowsWithTitle("CapCut")[0].maximize()
         time.sleep(2)
             
@@ -274,16 +273,7 @@ def create_new_project(video_path):
             
         return True
     except Exception as e:
-        tb = e.__traceback__
-        error_message = f"Exception: {e} | "
-        while tb is not None:
-            filename = tb.tb_frame.f_code.co_filename
-            lineno = tb.tb_lineno
-            function_name = tb.tb_frame.f_code.co_name
-            error_message += f"File: {filename}, Line: {lineno}, in {function_name}\n"
-            tb = tb.tb_next
-        open("error_log.txt", "a").write(error_message)
-        a = input("Press Enter to continue...")
+        print(f"Error creating new project: {e}")
         return False
 def close_project():
     """Close the current project"""
@@ -350,6 +340,13 @@ def main():
             for i, video_path in enumerate(video_files):
                 video_name = os.path.basename(video_path)
                 print(f"\nProcessing video {i+1}/{len(video_files)}: {video_name}")
+                while True:
+                    try:
+                        if pyautogui.locateCenterOnScreen('./assets/create_project.png', confidence=0.8):
+                            break
+                        time.sleep(1)
+                    except Exception as e:
+                        continue
                 
                 # Create new project with the video
                 if not create_new_project(video_path):
