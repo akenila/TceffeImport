@@ -1,3 +1,208 @@
+def apply_effects(data_file):
+    def transform_text_json(input_json_str):
+        # Parse the input JSON string
+        input_data = json.loads(input_json_str)
+        
+        # Extract the text and styles
+        text = input_data.get("text", "")
+        styles = input_data.get("styles", [])
+        
+        # Create the output structure
+        output_data = {
+            "text": text,
+            "styles": []
+        }
+        
+        # Process each style
+        for style in styles:
+            # Create a new style with the desired structure
+            new_style = {
+                "fill": {
+                    "content": style.get("fill", {}).get("content", {})
+                },
+                "font": {
+                    "path": "C:/Users/Admin/AppData/Local/CapCut/User Data/Cache/effect/176684101/4d3ef21ef574d220ff7a68d14ea296af/ZY Vigorous-Medium.ttf",
+                    "id": "7324166831881589249"
+                },
+                "size": 13,
+                "shadows": [{
+                    "alpha": 0.49939000606536865,
+                    "distance": 0,
+                    "content": {
+                        "render_type": "solid",
+                        "solid": {
+                            "color": [0, 0, 0]
+                        }
+                    },
+                    "feather": 0.067450001835823059,
+                    "angle": 0
+                }],
+                "range": style.get("range", [0, 0])
+            }
+            output_data["styles"].append(new_style)
+        
+        # Convert back to JSON string
+        output_json_str = json.dumps(output_data, ensure_ascii=False)
+        return output_json_str
+
+    a = json.loads(open(data_file, "r", encoding="utf-8").read())
+    a["config"]["subtitle_keywords_config"] = {
+                "font_size_ratio": 1.0,
+                "is_change_font_size": False,
+                "styles": "{\"styles\":[{\"fill\":{\"alpha\":1,\"content\":{\"solid\":{\"color\":[1.0,0.8,0.08235294117647059]}}},\"range\":[0,19],\"size\":16.899999618530273}],\"text\":\"The quick brown fox\"}",
+                "subtitle_template_font_size": 0.0,
+                "subtitle_template_keywords_original_font_size": 16.899999618530273,
+                "subtitle_template_original_font_size": 13.0
+            }
+    print(a["config"]["subtitle_keywords_config"])
+    list_materials = a["materials"]["material_animations"]
+    d = 0
+
+    for i in list_materials:
+        if list_materials.index(i) == 0:
+            continue
+        i["animations"] = [
+                            {
+                                "anim_adjust_params": None,
+                                "category_id": "",
+                                "category_name": "",
+                                "duration": a['tracks'][1]['segments'][d]['target_timerange']['duration'],
+                                "id": "",
+                                "material_type": "sticker",
+                                "name": "",
+                                "panel": "",
+                                "path": "C:/Users/Admin/AppData/Local/CapCut/User Data/Cache/effect/257515765/0513f717e27f8bff6301dab02400c571",
+                                "platform": "all",
+                                "request_id": "",
+                                "resource_id": "7347899436804084225",
+                                "source_platform": 0,
+                                "start": 0,
+                                "third_resource_id": "",
+                                "type": "caption"
+                            }
+                        ]
+        d += 1
+    print(a["materials"]["material_animations"][1]["animations"][0])
+    a["materials"]["text_templates"] = [
+                {
+                    "aigc_config": {
+                        "font_item": {
+                            "category_id": "",
+                            "category_name": "",
+                            "effect_id": "",
+                            "file_uri": "",
+                            "id": "16D82666-38EB-4f3a-8B1A-F12095B4B4F2",
+                            "path": "",
+                            "request_id": "",
+                            "resource_id": "",
+                            "source_platform": 0,
+                            "team_id": "",
+                            "third_resource_id": "",
+                            "title": ""
+                        },
+                        "model": "",
+                        "prompt": "",
+                        "seed": 0
+                    },
+                    "aigc_type": "none",
+                    "category_id": "",
+                    "category_name": "",
+                    "check_flag": 7,
+                    "current_word_info": {
+                        "end_time": 0,
+                        "keyword_ranges": [],
+                        "start_time": 0,
+                        "text": "",
+                        "words": []
+                    },
+                    "effect_id": "7348954237671443717",
+                    "formula_id": "",
+                    "id": "11D7F3FF-0AB4-495f-8665-7DFC2E97AEA9",
+                    "is_3d": False,
+                    "is_lyric_effect": False,
+                    "is_pre_rendered": False,
+                    "is_uneven_animation": False,
+                    "lyric_group_id": "",
+                    "material_text_ranges": [],
+                    "merge_content": "",
+                    "name": "逐词边框 紫",
+                    "non_text_info_resources": [],
+                    "origin_word_info": {
+                        "end_time": 0,
+                        "keyword_ranges": [],
+                        "start_time": 0,
+                        "text": "",
+                        "words": []
+                    },
+                    "path": "C:/Users/Admin/AppData/Local/CapCut/User Data/Cache/effect/7348954237671443717/c025fe55ba0c2a9082df962ab53fd352",
+                    "platform": "all",
+                    "request_id": "",
+                    "resource_id": "7348954237671443717",
+                    "resources": [
+                        {
+                            "panel": "fonts",
+                            "path": "C:/Users/Admin/AppData/Local/CapCut/User Data/Cache/effect/176684101/4d3ef21ef574d220ff7a68d14ea296af/ZY Vigorous-Medium.ttf",
+                            "resource_id": "7324166831881589249",
+                            "source_platform": 0
+                        },
+                        {
+                            "panel": "text",
+                            "path": "C:/Users/Admin/AppData/Local/CapCut/User Data/Cache/effect/257515765/0513f717e27f8bff6301dab02400c571",
+                            "resource_id": "7347899436804084225",
+                            "source_platform": 0
+                        }
+                    ],
+                    "source_platform": 1,
+                    "text_info_resources": [
+                        {
+                            "attach_info": {
+                                "clip": {
+                                    "alpha": 1.0,
+                                    "flip": {
+                                        "horizontal": False,
+                                        "vertical": False
+                                    },
+                                    "rotation": 0.0,
+                                    "scale": {
+                                        "x": 1.0,
+                                        "y": 1.0
+                                    },
+                                    "transform": {
+                                        "x": 0.0,
+                                        "y": 0.0
+                                    }
+                                },
+                                "duration": 1433333,
+                                "original_size_height": 75.83334350585938,
+                                "original_size_width": 671.6666870117188,
+                                "start_time": 0
+                            },
+                            "capital": "",
+                            "clip_type": "",
+                            "extra_material_refs": [
+                                "C97E8728-486D-408f-9A8C-A22DB24AE3D8"
+                            ],
+                            "lyric_keyframes": [],
+                            "order_in_layer": 0,
+                            "text_material_id": "C7F80588-1238-48a9-BC23-E7F1209ADCE4",
+                            "word_index": []
+                        }
+                    ],
+                    "text_template_preset_resource_id": "",
+                    "text_template_resource_type": "subtitle_template",
+                    "text_to_audio_ids": [],
+                    "third_resource_id": "7348707650151911938",
+                    "type": "text_template_subtitle",
+                    "version": "1.0.0"
+                }
+            ]
+    list_srt = a["materials"]["texts"]
+    for i in list_srt:
+        i["content"] = transform_text_json(i["content"])
+    with open(data_file, "w", encoding="utf-8") as f:
+        json.dump(a,f, ensure_ascii=False, indent=4)
+
+
 def extract(path):
     with open(path, 'r', encoding="utf-8") as file:
         return json.load(file)
@@ -186,7 +391,7 @@ def create_new_project(video_path):
                 removal_pos = pyautogui.locateCenterOnScreen('./assets/removal.png', confidence=0.8)
                 if removal_pos:
                     # Move 20px left from the found position
-                    click_pos = (removal_pos[0] - 80, removal_pos[1])
+                    click_pos = (removal_pos[0] - 70, removal_pos[1])
                     pyautogui.click(click_pos)
                     time.sleep(1)
                     time.sleep(2)
@@ -243,31 +448,7 @@ def create_new_project(video_path):
                             print("Subtitle generation timed out")
                             return False
                         
-                        # Click on template button
-                        print("Looking for template button...")
-                        while True:
-                            try:
-                                template_pos = pyautogui.locateCenterOnScreen('./assets/template.png', confidence=0.8)
-                                if template_pos:
-                                    pyautogui.click(template_pos)
-                                    print("Clicked on template button")
-                                    time.sleep(2)
-                                    
-                                    # Click on effect button
-                                    print("Looking for effect button...")
-                                    effect_pos = pyautogui.locateCenterOnScreen('./assets/effect.png', confidence=0.8)
-                                    if effect_pos:
-                                        pyautogui.click(effect_pos)
-                                        print("Clicked on effect button")
-                                        time.sleep(2)
-                                    else:
-                                        print("Could not find effect button")
-                                    break
-                                else:
-                                    print("Could not find template button")
-                            except Exception as e:
-                                time.sleep(2)
-                                continue
+                        
                     else:
                         print("Could not find generate button")
                 else:
@@ -357,6 +538,40 @@ def main():
                 if not close_project():
                     print(f"Failed to close project for {video_name}. Skipping...")
                     continue
+                capcut_path = os.path.join(os.getenv("LOCALAPPDATA"), "CapCut")
+                projects_path = os.path.join(capcut_path, "User Data", "Projects", "com.lveditor.draft")
+                
+                # Check if path exists
+                if not os.path.exists(projects_path):
+                    print(f"CapCut projects folder not found at: {projects_path}")
+                    return None
+                
+                # Get all project folders except special folders
+                project_folders = [p for p in os.listdir(projects_path) 
+                                if p not in ['.recycle_bin', 'root_meta_info.json']]
+                
+                if not project_folders:
+                    print("No project folders found")
+                    return None
+                
+                # Get the most recently created project folder
+                project_with_times = []
+                for folder in project_folders:
+                    folder_path = os.path.join(projects_path, folder)
+                    # Get creation time
+                    creation_time = os.path.getctime(folder_path)
+                    project_with_times.append((folder, creation_time))
+                
+                # Sort by creation time (newest first)
+                project_with_times.sort(key=lambda x: x[1], reverse=True)
+                
+                # Get the most recent project
+                latest_project = project_with_times[0][0]
+                draft = os.path.join(projects_path, latest_project, "draft_content.json")
+                print(f"Applying effects to project folder: {latest_project}")
+                apply_effects(draft)
+                time.sleep(2)
+                print("Apply effects successfully")
                     
                 # Generate auto subtitles
             print("\nAll videos processed. Task completed.")
