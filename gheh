@@ -1,3 +1,18 @@
+def get_duration(data_file, id):
+    with open(data_file, "r", encoding="utf-8") as f:
+        data = json.load(f)
+    list_materials = data['tracks']
+    no_animation = list_materials[0]['segments'][0]['extra_material_refs']
+    if id in no_animation:
+        return 0
+    else:
+        for i in range(1, len(list_materials)):
+            material_id = list_materials[i]['segments'][0]['extra_material_refs'][0]
+            if id == material_id:
+                duration = list_materials[i]['segments'][0]['target_timerange']['duration']
+                return duration
+    return None
+
 def apply_effects(data_file):
     def transform_text_json(input_json_str):
         # Parse the input JSON string
@@ -59,14 +74,15 @@ def apply_effects(data_file):
     d = 0
 
     for i in list_materials:
-        if list_materials.index(i) == 0:
+        duration_material = get_duration(data_file, i["id"])
+        if duration_material == 0:
             continue
         i["animations"] = [
                             {
                                 "anim_adjust_params": None,
                                 "category_id": "",
                                 "category_name": "",
-                                "duration": a['tracks'][1]['segments'][d]['target_timerange']['duration'],
+                                "duration": duration_material,
                                 "id": "",
                                 "material_type": "sticker",
                                 "name": "",
@@ -201,7 +217,6 @@ def apply_effects(data_file):
         i["content"] = transform_text_json(i["content"])
     with open(data_file, "w", encoding="utf-8") as f:
         json.dump(a,f, ensure_ascii=False, indent=4)
-
 
 def extract(path):
     with open(path, 'r', encoding="utf-8") as file:
