@@ -585,6 +585,7 @@ def main():
                 draft = os.path.join(projects_path, latest_project, "draft_content.json")
                 print(f"Applying effects to project folder: {latest_project}")
                 apply_effects(draft)
+                os.rename(os.path.join(projects_path, latest_project), os.path.join(projects_path, video_name))
                 time.sleep(2)
                 print("Apply effects successfully")
                     
